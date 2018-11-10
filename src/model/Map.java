@@ -10,9 +10,11 @@ public class Map {
 	
 	public int[][] arr;
 	private ImageIcon empty, circle, cross;
+	public boolean stepPlayer;
 	
 	public Map(int width, int height) {
 		arr = new int[width][height];
+		stepPlayer = true;
 		init();
 		try {
 			this.empty = new ImageIcon((BufferedImage)ImageIO.read(this.getClass().getResource("/icons/empty.PNG")));
@@ -40,5 +42,20 @@ public class Map {
 		} else {
 			return cross;
 		}
+	}
+	
+	public boolean doStep(int x, int y) {
+		if(x >= 0 && y >= 0 && x < arr.length && y < arr[0].length && arr[x][y] == 0) {
+			arr[x][y] = (stepPlayer?1:2);
+			stepPlayer = !stepPlayer;
+			return true;
+		}
+		return false;		
+	}
+	
+	private boolean isWin(int color) {
+		
+		
+		return false;
 	}
 }

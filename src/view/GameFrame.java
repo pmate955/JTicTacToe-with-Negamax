@@ -2,6 +2,8 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,7 +11,7 @@ import javax.swing.JPanel;
 
 import model.Map;
 
-public class GameFrame extends JFrame {
+public class GameFrame extends JFrame implements MouseListener{
 	
 	private int height;
 	private int width;
@@ -27,6 +29,7 @@ public class GameFrame extends JFrame {
 		this.setResizable(false);
 		this.gameMap = new Map(width, height);
 		this.drawMap();
+		this.addMouseListener(this);
 		this.setVisible(true);
 	}
 	
@@ -57,6 +60,42 @@ public class GameFrame extends JFrame {
 	public static void main(String[] args) {
 		GameFrame f = new GameFrame(15,15);
 
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+	//	if(gameMap.stepPlayer) {
+			int x = (arg0.getX()-8) / 30;
+			int y = (arg0.getY()-25) / 30 ;
+			if(gameMap.doStep(y, x)) {
+				this.drawMap();
+			}
+	//	}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
