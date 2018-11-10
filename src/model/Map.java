@@ -13,12 +13,13 @@ public class Map {
 	public boolean stepPlayer;
 	public int cells;
 	private int numberToWin;
+	public int winner;
 	
-	public Map(int width, int height) {
+	public Map(int width, int height, int numberToWind) {
 		arr = new int[width][height];
 		cells = width*height;
 		stepPlayer = true;
-		numberToWin = 5;
+		numberToWin = numberToWind;
 		init();
 		try {
 			this.empty = new ImageIcon((BufferedImage)ImageIO.read(this.getClass().getResource("/icons/empty.PNG")));
@@ -31,6 +32,7 @@ public class Map {
 	}
 
 	public void init() {
+		winner = -1;
 		for(int i = 0; i < arr.length; i++) {
 			for(int j = 0; j < arr[i].length; j++) {
 				arr[i][j] = 0;
@@ -51,7 +53,8 @@ public class Map {
 	public boolean doStep(int x, int y) {
 		if(x >= 0 && y >= 0 && x < arr.length && y < arr[0].length && arr[x][y] == 0) {
 			arr[x][y] = (stepPlayer?1:2);
-			if(isWin(x,y, stepPlayer?1:2)) {
+			if(isWin(x,y, (stepPlayer?1:2))) {
+				winner = stepPlayer?1:2;
 				System.out.println("WIN");
 			}
 			stepPlayer = !stepPlayer;
