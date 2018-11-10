@@ -29,7 +29,7 @@ public class GameFrame extends JFrame implements MouseListener{
 		this.width = width;
 		this.setTitle("TicTacToe with Negamax");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(height*30,width*30+30);
+		this.setSize(height*30+6,width*30+25);
 		this.setLayout(new BorderLayout());
 		this.add(generateGamePanel(), BorderLayout.NORTH);
 		players = new Object[2];
@@ -39,6 +39,7 @@ public class GameFrame extends JFrame implements MouseListener{
 		this.gameMap = new Map(width, height, numberToWin);
 		this.drawMap();
 		this.addMouseListener(this);
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		this.startGame();
 	}
@@ -88,7 +89,8 @@ public class GameFrame extends JFrame implements MouseListener{
 					System.out.println("NOT VALID - random " + lastStep[0] + " " + lastStep[1]);
 				}
 			} else if(players[index] instanceof AIPlayer) {
-				lastStep = ((AIPlayer)players[index]).getStep(lastStep);
+			lastStep = ((AIPlayer)players[index]).getStep(lastStep);
+				
 				if(!gameMap.doStep(lastStep[0], lastStep[1])) {
 					System.out.println("NOT VALID - AI " + lastStep[0] + " " + lastStep[1]);
 				}
@@ -110,7 +112,7 @@ public class GameFrame extends JFrame implements MouseListener{
 	}
 
 	public static void main(String[] args) {
-		GameFrame f = new GameFrame(3,3, 3);
+		GameFrame f = new GameFrame(5,5, 4);
 
 	}
 
@@ -118,8 +120,9 @@ public class GameFrame extends JFrame implements MouseListener{
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 	//	if(gameMap.stepPlayer) {
-			int x = (arg0.getX()-8) / 30;
+			int x = (arg0.getX()-6) / 30;
 			int y = (arg0.getY()-25) / 30 ;
+			
 			for(int i = 0; i < 2; i++) {
 				if(players[i] instanceof HumanPlayer) {
 					((HumanPlayer)players[i]).setStep(y, x);

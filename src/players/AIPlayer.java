@@ -20,8 +20,9 @@ public class AIPlayer {
 	public int[] getStep(int[] lastStep) {
 		arr[lastStep[0]][lastStep[1]] = getEnemyColor();
 		maxCells--;
-		int[] step = negaMax(10,this.color, Integer.MIN_VALUE,Integer.MAX_VALUE);
+		int[] step = negaMax(7,this.color, Integer.MIN_VALUE,Integer.MAX_VALUE);
 		arr[step[1]][step[2]] = this.color;
+		System.out.println(step[0]);
 		maxCells--;
 		return new int[] {step[1],step[2]};
 		
@@ -62,12 +63,26 @@ public class AIPlayer {
 		
 	}
 	
+	int[] xDir = {0,1,1,-1,-1,0,-1,1};
+	int[] yDir = {1,0,1,-1,0,-1,1,-1};
+	
+	private boolean hasNeighbor(int x, int y) {
+		for(int i = 0; i < xDir.length; i++) {
+			int newX = x + xDir[i];
+			int newY = y + yDir[i];
+			if(newX >= 0 && newY >= 0 && newX < arr.length && newY < arr[0].length) {
+				if(arr[newX][newY] != 0) return true;
+			}
+		}
+		return false;
+	}
+	
 	public List<int[]> getSteps(){
 		List<int[]> output = new ArrayList<int[]>();
 		for(int x = 0; x < arr.length; x++) {
 			for(int y = 0; y < arr[0].length; y++) {
 				if(arr[x][y] == 0) {
-					output.add(new int[] {x,y});
+					/*if(hasNeighbor(x, y))*/ output.add(new int[] {x,y});
 				} else if(isWin(x,y,arr[x][y])) {
 					return new ArrayList<int[]>();
 				}
@@ -90,6 +105,43 @@ public class AIPlayer {
 		}
 		return output;
 		
+	}
+	
+	public int evaluate2() {
+		int output = getRows(color);
+		output -= getRows(getEnemyColor());
+		return output;
+	}
+	
+	public int getRows(int color) {
+		int output = 0;
+		for(int i = 0 ; i < arr.length; i++) {
+			int found = 0;
+			for(int j = 0; j < arr[0].length; j++) {
+				if(arr[i][j] == color) {
+					found++;
+					if(found == numberToWin) {
+						output += 100;
+					}
+				} else if(found > 0){
+					found = 0;
+				}
+			}
+		}
+		for(int j = 0; j < arr[0].length; j++) {
+			int found = 0;
+			for(int i = 0 ; i < arr.length; i++) {
+				if(arr[i][j] == color) {
+					found++;
+					if(found == numberToWin) {
+						output += 100;
+					}
+				} else if(found > 0){
+					found = 0;
+				}
+			}
+		}
+		return output;
 	}
 	
 	private int getEnemyColor() {
