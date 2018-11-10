@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import model.Map;
@@ -58,7 +59,7 @@ public class GameFrame extends JFrame implements MouseListener{
 	
 
 	public static void main(String[] args) {
-		GameFrame f = new GameFrame(15,15);
+		GameFrame f = new GameFrame(15,10);
 
 	}
 
@@ -70,6 +71,9 @@ public class GameFrame extends JFrame implements MouseListener{
 			int y = (arg0.getY()-25) / 30 ;
 			if(gameMap.doStep(y, x)) {
 				this.drawMap();
+				if(gameMap.isWin(y, x, gameMap.stepPlayer?2:1)) {
+					JOptionPane.showMessageDialog(this, gameMap.stepPlayer?"Circle":"Cross");
+				}
 			}
 	//	}
 	}
