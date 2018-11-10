@@ -55,7 +55,6 @@ public class Map {
 			arr[x][y] = (stepPlayer?1:2);
 			if(isWin(x,y, (stepPlayer?1:2))) {
 				winner = stepPlayer?1:2;
-				System.out.println("WIN");
 			}
 			stepPlayer = !stepPlayer;
 			cells--;
@@ -70,6 +69,9 @@ public class Map {
 		for(int x2 = 0; x2 < arr.length ;x2++) {		//Check rows
 			if(arr[x2][y] == color) {
 				found++;
+				if(found >= numberToWin) {
+					return true;
+				}
 			} else {
 				if(found >= numberToWin) {
 					return true;
@@ -81,10 +83,10 @@ public class Map {
 		for(int y2 = 0; y2 < arr[0].length; y2++) {		//Check columns
 			if(arr[x][y2] == color) {
 				found++;
-			} else {
 				if(found >= numberToWin) {
 					return true;
 				}
+			} else {
 				found = 0;
 			}
 		}
@@ -97,10 +99,10 @@ public class Map {
 		while(startX < arr.length && startY < arr[0].length) {		//first diagonal
 			if(arr[startX++][startY++] == color) {
 				found++;
-			} else {
 				if(found >= numberToWin) {
 					return true;
 				}
+			} else {				
 				found = 0;
 			}
 		}
@@ -114,10 +116,10 @@ public class Map {
 		while(startX >= 0 && startY < arr[0].length) {
 			if(arr[startX--][startY++] == color) {
 				found++;
-			} else {
 				if(found >= numberToWin) {
 					return true;
 				}
+			} else {				
 				found = 0;
 			}
 		}

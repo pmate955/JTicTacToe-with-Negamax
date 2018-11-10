@@ -20,10 +20,10 @@ public class AIPlayer {
 	public int[] getStep(int[] lastStep) {
 		arr[lastStep[0]][lastStep[1]] = getEnemyColor();
 		maxCells--;
-		int[] step = negaMax(maxCells,this.color, 0,0);
-		arr[step[0]][step[1]] = this.color;
+		int[] step = negaMax(10,this.color, Integer.MIN_VALUE,Integer.MAX_VALUE);
+		arr[step[1]][step[2]] = this.color;
 		maxCells--;
-		return step;
+		return new int[] {step[1],step[2]};
 		
 	}
 	
@@ -34,27 +34,31 @@ public class AIPlayer {
 		List<int[]> steps = getSteps();
 		if(depth == 0 || steps.isEmpty()) {
 			bestScore = evaluate();
+			return new int[] {bestScore, -1, -1};
 		} else {
 			for(int[] act : steps) {
 				arr[act[0]][act[1]] = color;
 				if(color == this.color) {
-					currentScore = negaMax(depth - 1, (color==1?2:1), alpha, beta)[0];
-					if(currentScore > bestScore) {
-						bestScore = currentScore;
+					currentScore = negaMax(depth - 1, getEnemyColor(), alpha, beta)[0];
+					if(currentScore > alpha) {
+						alpha = currentScore;
 						output = act;
 					}
 				} else {
 					currentScore = negaMax(depth - 1, this.color, alpha, beta)[0];
-					if(currentScore < bestScore) {
-						bestScore = currentScore;
+					if(currentScore < beta) {
+						beta = currentScore;
 						output = act;
 					}
 				}
 				
+				
 				arr[act[0]][act[1]] = 0;
+				if (alpha >= beta)															//Az alfa-béta vágás bekövetkezése
+					break;
 			}
 		}
-		return output;
+		return new int[] { (this.color == color) ? alpha : beta, output[0], output[1]};
 		
 	}
 	
@@ -64,6 +68,8 @@ public class AIPlayer {
 			for(int y = 0; y < arr[0].length; y++) {
 				if(arr[x][y] == 0) {
 					output.add(new int[] {x,y});
+				} else if(isWin(x,y,arr[x][y])) {
+					return new ArrayList<int[]>();
 				}
 			}
 		}
@@ -93,10 +99,12 @@ public class AIPlayer {
 	
 	public boolean isWin(int x, int y, int color) {
 		int found = 0;
-		int value = 0;
 		for(int x2 = 0; x2 < arr.length ;x2++) {		//Check rows
 			if(arr[x2][y] == color) {
 				found++;
+				if(found >= numberToWin) {
+					return true;
+				}
 			} else {
 				if(found >= numberToWin) {
 					return true;
@@ -108,10 +116,10 @@ public class AIPlayer {
 		for(int y2 = 0; y2 < arr[0].length; y2++) {		//Check columns
 			if(arr[x][y2] == color) {
 				found++;
-			} else {
 				if(found >= numberToWin) {
 					return true;
 				}
+			} else {
 				found = 0;
 			}
 		}
@@ -124,10 +132,10 @@ public class AIPlayer {
 		while(startX < arr.length && startY < arr[0].length) {		//first diagonal
 			if(arr[startX++][startY++] == color) {
 				found++;
-			} else {
 				if(found >= numberToWin) {
 					return true;
 				}
+			} else {				
 				found = 0;
 			}
 		}
@@ -141,10 +149,10 @@ public class AIPlayer {
 		while(startX >= 0 && startY < arr[0].length) {
 			if(arr[startX--][startY++] == color) {
 				found++;
-			} else {
 				if(found >= numberToWin) {
 					return true;
 				}
+			} else {				
 				found = 0;
 			}
 		}

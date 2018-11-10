@@ -33,7 +33,6 @@ public class GameFrame extends JFrame implements MouseListener{
 		this.setLayout(new BorderLayout());
 		this.add(generateGamePanel(), BorderLayout.NORTH);
 		players = new Object[2];
-		System.err.println(width + " " + height);
 		players[0] = new HumanPlayer(new int[width][height], true, numberToWin);
 		players[1] = new AIPlayer(new int[width][height], 2, numberToWin);
 		this.setResizable(false);
@@ -90,9 +89,6 @@ public class GameFrame extends JFrame implements MouseListener{
 				}
 			} else if(players[index] instanceof AIPlayer) {
 				lastStep = ((AIPlayer)players[index]).getStep(lastStep);
-				int val = ((AIPlayer)players[index]).evaluate();
-				
-				System.out.println("value: " + val);
 				if(!gameMap.doStep(lastStep[0], lastStep[1])) {
 					System.out.println("NOT VALID - AI " + lastStep[0] + " " + lastStep[1]);
 				}
@@ -105,7 +101,12 @@ public class GameFrame extends JFrame implements MouseListener{
 			}
 			this.drawMap();
 		}
-		JOptionPane.showMessageDialog(this, "Game over");
+		if(gameMap.winner == -1) {
+			JOptionPane.showMessageDialog(this, "Game over, no more cell");
+		} else {
+			JOptionPane.showMessageDialog(this, players[gameMap.winner-1].getClass().getName() + " WIN");
+		}
+		
 	}
 
 	public static void main(String[] args) {
