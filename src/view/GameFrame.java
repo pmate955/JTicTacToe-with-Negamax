@@ -90,7 +90,7 @@ public class GameFrame extends JFrame implements MouseListener{
 				}
 			} else if(players[index] instanceof AIPlayer) {
 			lastStep = ((AIPlayer)players[index]).getStep(lastStep);
-				
+				System.out.println(((AIPlayer)players[index]).gethash());
 				if(!gameMap.doStep(lastStep[0], lastStep[1])) {
 					System.out.println("NOT VALID - AI " + lastStep[0] + " " + lastStep[1]);
 				}

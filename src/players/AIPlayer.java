@@ -1,6 +1,7 @@
 package players;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AIPlayer {
@@ -9,18 +10,28 @@ public class AIPlayer {
 	public int[][] arr;
 	private int numberToWin;
 	private int maxCells;
+	private long[][] bit_strings;
+	private HashMap<Long, HashEntry> mp;
 	
 	public AIPlayer(int[][] arr, int color, int numberToWin) {
 		this.arr = arr;
 		this.color = color;
 		this.maxCells = arr.length * arr[0].length;
 		this.numberToWin = numberToWin;
+		bit_strings = new long[maxCells][2];
+		mp = new HashMap<Long, HashEntry>();
+		for(int i = 0; i < maxCells; i++) {
+			for(int j = 0; j < 2; j++) {
+				bit_strings[i][j] =  (int) (((long) (Math.random() * Long.MAX_VALUE)) & 0xFFFFFFFF);
+			}
+		}
+		
 	}
 	
 	public int[] getStep(int[] lastStep) {
 		arr[lastStep[0]][lastStep[1]] = getEnemyColor();
 		maxCells--;
-		int[] step = negaMax(7,this.color, Integer.MIN_VALUE,Integer.MAX_VALUE);
+		int[] step = negaMax(numberToWin*2,this.color, Integer.MIN_VALUE,Integer.MAX_VALUE);
 		arr[step[1]][step[2]] = this.color;
 		System.out.println(step[0]);
 		maxCells--;
@@ -30,6 +41,28 @@ public class AIPlayer {
 	
 	private int[] negaMax(int depth, int color, int alpha, int beta) {
 		int bestScore = (color == this.color) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		int alphaOrig = alpha;
+		HashEntry h = null;
+		long val = this.gethash();
+		if(mp.containsKey(val)) {
+			h = mp.get(val);
+			if(h.depth >= depth) {
+				if(h.type.equals("lower_bound")) {
+					if(alpha < h.score) {
+						alpha = h.score;
+					}
+				} else if(h.type.equals("upper_bound")) {
+					if(beta > h.score) {
+						beta = h.score;
+					}
+				} else {
+					return h.bestStep;
+				}
+				if(alpha>=beta)
+				      return h.bestStep;
+			}
+		}
+		
 		int currentScore;
 		int[] output = new int[2];
 		List<int[]> steps = getSteps();
@@ -58,6 +91,19 @@ public class AIPlayer {
 				if (alpha >= beta)															//Az alfa-béta vágás bekövetkezése
 					break;
 			}
+		}
+		if(h == null) {
+			int value = (this.color == color) ? alpha : beta;
+			String type = "";
+			if(value <= alphaOrig) {
+				type = "upper_bound";
+			} else if(value >= beta) {
+				type = "lower_bound";
+			} else {
+				type = "exact";
+			}
+			h = new HashEntry((this.color == color) ? alpha : beta, type, new int[]{ (this.color == color) ? alpha : beta, output[0], output[1]}, depth);
+			mp.put(val, h);
 		}
 		return new int[] { (this.color == color) ? alpha : beta, output[0], output[1]};
 		
@@ -209,5 +255,39 @@ public class AIPlayer {
 			}
 		}
 		return false;
+	}
+	
+	public long gethash() {
+		long l = 0l;
+		int x = 0;
+		int y = 0;
+		for(int i = 0; i < bit_strings.length; i++) {
+			if(arr[x][y] != 0) {
+				l ^= bit_strings[i][arr[x][y]-1];
+			}
+			x++;
+			if(x == arr.length) {
+				x = 0;
+				y++;
+			}
+		}
+		return l;
+	}
+	
+	private class HashEntry{
+		int score;
+		int depth;
+		String type;
+		int[] bestStep;
+		
+		public HashEntry(int score, String type, int[] bestStep, int depth) {
+			super();
+			this.score = score;
+			this.type = type;
+			this.bestStep = bestStep;
+			this.depth = depth;
+		}
+		
+		
 	}
 }
